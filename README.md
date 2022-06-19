@@ -42,7 +42,7 @@ jobs:
         uses: 'google-github-actions/upload-cloud-storage@v0'
         with:
           path: './file'
-          destination: 'my-bucket/file'
+          destination: 'my-bucket'
 
       - name: 'update'
         uses: 'sinyo-matu/update-google-translation-glossary'
