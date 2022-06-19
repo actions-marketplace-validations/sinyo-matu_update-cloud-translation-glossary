@@ -93,7 +93,9 @@ async function createGlossary(
   });
   if (resp.status >= 300) {
     core.error(
-      `delete glossary request failed with status:${resp.status} message:${resp.text}`
+      `delete glossary request failed with status:${
+        resp.status
+      } message:${await resp.text()}`
     );
     throw Error("delete request failed");
   }
@@ -118,7 +120,9 @@ async function deleteGlossary(
   }
   if (resp.status >= 300) {
     core.error(
-      `delete glossary request failed with status:${resp.status} message:${resp.text}`
+      `delete glossary request failed with status:${
+        resp.status
+      } message:${await resp.text()}`
     );
     throw Error("delete request failed");
   }
