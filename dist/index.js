@@ -44,7 +44,7 @@ const notRequiredInputOption = {
     trimWhiteSpace: true,
 };
 function getRequiredInputs() {
-    const accessToken = core.getInput("access-token", requiredInputOption);
+    const accessToken = core.getInput("access-token");
     const bucketName = core.getInput("bucket-name", requiredInputOption);
     const glossaryName = core.getInput("glossary-name", requiredInputOption);
     const glossaryFileName = core.getInput("glossary-file-name", requiredInputOption);
@@ -121,6 +121,7 @@ async function deleteGlossary(projectId, glossaryName, accessToken) {
             Authorization: `Bearer ${accessToken}`,
         },
     });
+    core.info(accessToken);
     if (resp.status === 404) {
         core.warning(`glossary ${glossaryName} is not found,continue to create`);
         return;
