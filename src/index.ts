@@ -93,6 +93,7 @@ async function createGlossary(
   });
   if (resp.status >= 300) {
     let message = await resp.text();
+    core.debug(`error message:${message}`);
     core.error(
       `delete glossary request failed with status:${resp.status} message:${message}`
     );
@@ -119,6 +120,7 @@ async function deleteGlossary(
   }
   if (resp.status >= 300) {
     let message = await resp.text();
+    core.debug(`error message:${message}`);
     core.error(
       `delete glossary request failed with status:${resp.status} message:${message}`
     );
