@@ -34,7 +34,7 @@ jobs:
       - name: "update"
         uses: ./
         with:
-          access-token: ${{ steps.auth.outputs.access_token}}
+          access-token: ${{ steps.auth.outputs.access_token }}
           bucket-name: "test-action-translation-bucket"
           glossary-name: "test-glossary"
           glossary-file-name: "sample.csv"

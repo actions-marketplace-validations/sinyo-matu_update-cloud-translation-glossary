@@ -18,7 +18,7 @@ interface RequiredInputs {
 }
 
 function getRequiredInputs(): RequiredInputs {
-  const accessToken = core.getInput("access-token", requiredInputOption);
+  const accessToken = core.getInput("access-token");
   const bucketName = core.getInput("bucket-name", requiredInputOption);
   const glossaryName = core.getInput("glossary-name", requiredInputOption);
   const glossaryFileName = core.getInput(
@@ -114,6 +114,7 @@ async function deleteGlossary(
       Authorization: `Bearer ${accessToken}`,
     },
   });
+  core.info(accessToken);
   if (resp.status === 404) {
     core.warning(`glossary ${glossaryName} is not found,continue to create`);
     return;
