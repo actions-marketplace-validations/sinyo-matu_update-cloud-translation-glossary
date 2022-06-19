@@ -1,0 +1,44 @@
+on: 
+  push:
+    path-ignore:
+      - "LICENSE"
+      - "README.md"
+  pull_request:
+    path-ignore:
+      - "LICENSE"
+      - "README.md"
+
+jobs:
+  upload_and_update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: "auth"
+        id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v0"
+        with:
+          token_format: "access_token"
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+
+      - name: "upload-file"
+        uses: "google-github-actions/upload-cloud-storage@v0"
+        with:
+          path: "./assets/sample.csv"
+          destination: "test-action-translation-bucket/sample.csv"
+
+      - name: "update"
+        uses: "sinyo-matu/update-google-translation-glossary"
+        with:
+          access-token: ${{ steps.auth.outputs.access_token}}
+          bucket-name: "test-action-translation-bucket"
+          glossary-name: "test-glossary"
+          glossary-file-name: "sample.csv"
+          project-id: "translation-test-project"
+          source-language: "ja"
+          target-language: "en"
