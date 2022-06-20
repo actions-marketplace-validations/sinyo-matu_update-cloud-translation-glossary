@@ -1,4 +1,4 @@
-import * as index from "../src/index";
+import * as index from "../src/utility";
 import { assert, test, it, describe } from "vitest";
 import { google } from "googleapis";
 import dotenv from "dotenv";
