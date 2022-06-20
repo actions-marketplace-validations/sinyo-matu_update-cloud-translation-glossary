@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deleteGlossary = exports.createGlossary = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const node_fetch_1 = __importDefault(__nccwpck_require__(429));
+const promises_1 = __nccwpck_require__(670);
 const requiredInputOption = {
     required: true,
     trimWhiteSpace: true,
@@ -77,8 +78,24 @@ async function onePairInput(sourceLanguage, targetLanguage) {
         },
     });
     core.info(`try create resource: ${projectId}/${glossaryName}`);
-    await createGlossary(input, projectId, accessToken);
-    core.info("done!");
+    const name = await createGlossary(input, projectId, accessToken);
+    if (!name) {
+        core.error("failed to parse google response of name field");
+        throw Error("failed to parse google response of name field");
+    }
+    core.info("wait for 2 sec...");
+    await (0, promises_1.setTimeout)(2000);
+    core.info(`try head operation: ${name}`);
+    const message = await headOperation(name, accessToken);
+    if (!message.metadate) {
+        core.error("failed to parse google response of metaData field");
+        throw Error("failed to parse google response of metaData field");
+    }
+    if (message.metadate.state === "FAILED") {
+        core.error(`create operation has failed. message:${message.error?.message}`);
+        throw Error("create operation failed");
+    }
+    return message.metadate.state;
 }
 async function codesSetInput(codesSet) {
     const { bucketName, glossaryFileName, projectId, glossaryName, accessToken } = getRequiredInputs();
@@ -98,9 +115,24 @@ async function codesSetInput(codesSet) {
             },
         },
     });
-    core.info(`try create resource: ${projectId}/${glossaryName}`);
-    await createGlossary(input, projectId, accessToken);
-    core.info("done!");
+    const name = await createGlossary(input, projectId, accessToken);
+    if (!name) {
+        core.error("failed to parse google response of name field");
+        throw Error("failed to parse google response of name field");
+    }
+    core.info("wait for 2 sec...");
+    await (0, promises_1.setTimeout)(2000);
+    core.info(`try head operation: ${name}`);
+    const message = await headOperation(name, accessToken);
+    if (!message.metadate) {
+        core.error("failed to parse google response of metaData field");
+        throw Error("failed to parse google response of metaData field");
+    }
+    if (message.metadate.state === "FAILED") {
+        core.error(`create operation has failed. message:${message.error?.message}`);
+        throw Error("create operation failed");
+    }
+    return message.metadate.state;
 }
 async function createGlossary(input, projectId, accessToken) {
     const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries`;
@@ -118,8 +150,9 @@ async function createGlossary(input, projectId, accessToken) {
         core.error(`delete glossary request failed with status:${resp.status} message:${message}`);
         throw Error("delete request failed");
     }
-    core.info(`create message :${await resp.text()}`);
-    return;
+    const message = (await resp.json());
+    core.info(`create message :${message}`);
+    return message.name;
 }
 exports.createGlossary = createGlossary;
 async function deleteGlossary(projectId, glossaryName, accessToken) {
@@ -152,16 +185,35 @@ async function main() {
     if (targetLanguage.length !== 0 && sourceLanguage.length !== 0) {
         core.info(`detected sourceLanguage: ${sourceLanguage}, targetLanguage ${targetLanguage}`);
         core.info(`create one pair glossary resource`);
-        await onePairInput(targetLanguage, sourceLanguage);
+        const state = await onePairInput(targetLanguage, sourceLanguage);
+        core.info(`update is ${state}`);
         return;
     }
     if (languageCodesSet.length !== 0) {
         core.info(`detected language codes set: ${languageCodesSet}`);
         core.info(`create multi-language glossary resource`);
-        await codesSetInput(languageCodesSet);
+        const state = await codesSetInput(languageCodesSet);
+        core.info(`update is ${state}`);
         return;
     }
     throw Error("Not appropriate language code input setting");
+}
+async function headOperation(name, accessToken) {
+    const endPoint = `https://translation.googleapis.com/v3/projects/${name}`;
+    let resp = await (0, node_fetch_1.default)(endPoint, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    if (resp.status >= 300) {
+        let message = (await resp.json());
+        core.debug(`error message:${message}`);
+        core.error(`delete glossary request failed with status:${resp.status} message:${message}`);
+        throw Error("delete request failed");
+    }
+    const message = (await resp.json());
+    return message;
 }
 try {
     main();
@@ -6518,6 +6570,14 @@ module.exports = require("os");
 
 "use strict";
 module.exports = require("path");
+
+/***/ }),
+
+/***/ 670:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("timers/promises");
 
 /***/ }),
 
