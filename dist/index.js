@@ -118,7 +118,7 @@ async function createGlossary(input, projectId, accessToken) {
         core.error(`delete glossary request failed with status:${resp.status} message:${message}`);
         throw Error("delete request failed");
     }
-    core.debug(`response message :${await resp.text()}`);
+    core.info(`create message :${await resp.text()}`);
     return;
 }
 exports.createGlossary = createGlossary;

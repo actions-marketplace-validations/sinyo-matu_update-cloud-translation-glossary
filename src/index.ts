@@ -115,7 +115,7 @@ export async function createGlossary(
     );
     throw Error("delete request failed");
   }
-  core.debug(`response message :${await resp.text()}`);
+  core.info(`create message :${await resp.text()}`);
   return;
 }
 
