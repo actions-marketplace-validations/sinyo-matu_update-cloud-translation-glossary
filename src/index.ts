@@ -1,5 +1,4 @@
 import * as core from "@actions/core";
-import { debug } from "console";
 import fetch from "node-fetch";
 const requiredInputOption = {
   required: true,
@@ -105,13 +104,12 @@ export async function createGlossary(
   if (resp.status >= 300) {
     let message = await resp.text();
     core.debug(`error message:${message}`);
-    debug(`error message:${message}`);
     core.error(
       `delete glossary request failed with status:${resp.status} message:${message}`
     );
     throw Error("delete request failed");
   }
-  debug(`response message:${resp.text()}`);
+  core.debug(`response message :${await resp.text()}`);
   return;
 }
 
@@ -133,14 +131,13 @@ export async function deleteGlossary(
   }
   if (resp.status >= 300) {
     let message = await resp.text();
-    debug(`error message:${message}`);
     core.debug(`error message:${message}`);
     core.error(
       `delete glossary request failed with status:${resp.status} message:${message}`
     );
     throw Error("delete request failed");
   }
-  debug(`response:${await resp.text()}`);
+  core.debug(`response message :${await resp.text()}`);
   return;
 }
 
