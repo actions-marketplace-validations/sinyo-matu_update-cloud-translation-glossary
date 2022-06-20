@@ -35,7 +35,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deleteGlossary = exports.createGlossary = void 0;
 const core = __importStar(__nccwpck_require__(186));
-const console_1 = __nccwpck_require__(206);
 const node_fetch_1 = __importDefault(__nccwpck_require__(429));
 const requiredInputOption = {
     required: true,
@@ -110,11 +109,10 @@ async function createGlossary(input, projectId, accessToken) {
     if (resp.status >= 300) {
         let message = await resp.text();
         core.debug(`error message:${message}`);
-        (0, console_1.debug)(`error message:${message}`);
         core.error(`delete glossary request failed with status:${resp.status} message:${message}`);
         throw Error("delete request failed");
     }
-    (0, console_1.debug)(`response message:${resp.text()}`);
+    core.debug(`response message :${await resp.text()}`);
     return;
 }
 exports.createGlossary = createGlossary;
@@ -132,12 +130,11 @@ async function deleteGlossary(projectId, glossaryName, accessToken) {
     }
     if (resp.status >= 300) {
         let message = await resp.text();
-        (0, console_1.debug)(`error message:${message}`);
         core.debug(`error message:${message}`);
         core.error(`delete glossary request failed with status:${resp.status} message:${message}`);
         throw Error("delete request failed");
     }
-    (0, console_1.debug)(`response:${await resp.text()}`);
+    core.debug(`response message :${await resp.text()}`);
     return;
 }
 exports.deleteGlossary = deleteGlossary;
@@ -6442,14 +6439,6 @@ module.exports = require("assert");
 
 "use strict";
 module.exports = require("buffer");
-
-/***/ }),
-
-/***/ 206:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("console");
 
 /***/ }),
 
