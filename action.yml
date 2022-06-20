@@ -25,6 +25,10 @@ inputs:
   language-codes-set:
     description: "if your glossary file is multi-language sets, set this as comma separated string of language codes"
     required: false
+  wait-time:
+    description: "create glossary source is a long-time operation, if you want to wait for operation ending please set this with second,default is 0 sec max is 300 secs"
+    required: false
+    default: "0"
 outputs:
   operation-id: # id of output
     description: "if the return operation state is RUNNING, this will be output"

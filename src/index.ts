@@ -41,7 +41,7 @@ export interface MetaData {
   state: STATE;
 }
 
-export type STATE = "FAILED" | "RUNNING" | "SUCCESS";
+export type STATE = "FAILED" | "RUNNING" | "SUCCEEDED";
 
 export interface HeadOperationResponse {}
 
@@ -88,8 +88,13 @@ async function onePairInput(sourceLanguage: string, targetLanguage: string) {
     core.error("failed to parse google response of name field");
     throw Error("failed to parse google response of name field");
   }
-  core.info("wait for 2 sec...");
-  await setTimeout(2000);
+  const waitTimeRaw = parseInt(
+    core.getInput("wait-time", notRequiredInputOption)
+  );
+  let waitTime = isNaN(waitTimeRaw) ? 0 : waitTimeRaw;
+  waitTime = waitTime > 300 ? 300 : waitTime;
+  core.info(`wait for ${waitTime} secs...`);
+  await setTimeout(waitTime * 1000);
   core.info(`try head operation: ${name}`);
   const message = await headOperation(name, accessToken);
   if (!message.metadata) {
@@ -129,8 +134,13 @@ async function codesSetInput(codesSet: string) {
     core.error("failed to parse google response of name field");
     throw Error("failed to parse google response of name field");
   }
-  core.info("wait for 2 sec...");
-  await setTimeout(2000);
+  const waitTimeRaw = parseInt(
+    core.getInput("wait-time", notRequiredInputOption)
+  );
+  let waitTime = isNaN(waitTimeRaw) ? 0 : waitTimeRaw;
+  waitTime = waitTime > 300 ? 300 : waitTime;
+  core.info(`wait for ${waitTime} secs...`);
+  await setTimeout(waitTime * 1000);
   core.info(`try head operation: ${name}`);
   const message = await headOperation(name, accessToken);
   if (!message.metadata) {
