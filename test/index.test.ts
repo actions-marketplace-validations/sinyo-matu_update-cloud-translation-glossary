@@ -1,5 +1,5 @@
-import * as index from "../src/utility";
-import { assert, test, it, describe } from "vitest";
+import * as index from "../src/index";
+import { assert, it, describe } from "vitest";
 import { google } from "googleapis";
 import dotenv from "dotenv";
 import { debug } from "console";
