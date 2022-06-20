@@ -60,6 +60,7 @@ function getRequiredInputs() {
 }
 async function onePairInput(sourceLanguage, targetLanguage) {
     const { bucketName, glossaryFileName, projectId, glossaryName, accessToken } = getRequiredInputs();
+    core.info(`try delete existed resource: ${projectId}/${glossaryName}`);
     await deleteGlossary(projectId, glossaryName, accessToken);
     const glossaryFullName = `projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
     const glossaryFilePath = `gs://${bucketName}/${glossaryFileName}`;
@@ -75,10 +76,13 @@ async function onePairInput(sourceLanguage, targetLanguage) {
             },
         },
     });
+    core.info(`try create resource: ${projectId}/${glossaryName}`);
     await createGlossary(input, projectId, accessToken);
+    core.info("done!");
 }
 async function codesSetInput(codesSet) {
     const { bucketName, glossaryFileName, projectId, glossaryName, accessToken } = getRequiredInputs();
+    core.info(`try delete existed resource: ${projectId}/${glossaryName}`);
     await deleteGlossary(projectId, glossaryName, accessToken);
     const glossaryFullName = `projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
     const glossaryFilePath = `gs://${bucketName}/${glossaryFileName}`;
@@ -94,7 +98,9 @@ async function codesSetInput(codesSet) {
             },
         },
     });
+    core.info(`try create resource: ${projectId}/${glossaryName}`);
     await createGlossary(input, projectId, accessToken);
+    core.info("done!");
 }
 async function createGlossary(input, projectId, accessToken) {
     const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries`;
@@ -125,6 +131,7 @@ async function deleteGlossary(projectId, glossaryName, accessToken) {
         },
     });
     if (resp.status === 404) {
+        core.debug(`response message: ${await resp.text()}`);
         core.warning(`glossary ${glossaryName} is not found,continue to create`);
         return;
     }

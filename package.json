@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "package": "ncc build --source-map --license licenses.txt",
-    "test": "vitest"
+    "test": "vitest",
+    "all": "tsc&&ncc build --source-map --license licenses.txt"
   },
   "dependencies": {
     "@actions/core": "^1.9.0",

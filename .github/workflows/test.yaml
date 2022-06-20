@@ -3,11 +3,14 @@ on:
     path-ignore:
       - "LICENSE"
       - "README.md"
+    tags-ignore:
+      - "v*.*"
   pull_request:
     path-ignore:
       - "LICENSE"
       - "README.md"
-
+    tags-ignore:
+      - "v*.*"
 jobs:
   upload_and_update:
     runs-on: ubuntu-latest

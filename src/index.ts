@@ -48,6 +48,7 @@ function getRequiredInputs(): RequiredInputs {
 async function onePairInput(sourceLanguage: string, targetLanguage: string) {
   const { bucketName, glossaryFileName, projectId, glossaryName, accessToken } =
     getRequiredInputs();
+  core.info(`try delete existed resource: ${projectId}/${glossaryName}`);
   await deleteGlossary(projectId, glossaryName, accessToken);
   const glossaryFullName = `projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
   const glossaryFilePath = `gs://${bucketName}/${glossaryFileName}`;
@@ -63,12 +64,15 @@ async function onePairInput(sourceLanguage: string, targetLanguage: string) {
       },
     },
   });
+  core.info(`try create resource: ${projectId}/${glossaryName}`);
   await createGlossary(input, projectId, accessToken);
+  core.info("done!");
 }
 
 async function codesSetInput(codesSet: string) {
   const { bucketName, glossaryFileName, projectId, glossaryName, accessToken } =
     getRequiredInputs();
+  core.info(`try delete existed resource: ${projectId}/${glossaryName}`);
   await deleteGlossary(projectId, glossaryName, accessToken);
   const glossaryFullName = `projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
   const glossaryFilePath = `gs://${bucketName}/${glossaryFileName}`;
@@ -84,7 +88,9 @@ async function codesSetInput(codesSet: string) {
       },
     },
   });
+  core.info(`try create resource: ${projectId}/${glossaryName}`);
   await createGlossary(input, projectId, accessToken);
+  core.info("done!");
 }
 
 export async function createGlossary(
@@ -126,6 +132,7 @@ export async function deleteGlossary(
     },
   });
   if (resp.status === 404) {
+    core.debug(`response message: ${await resp.text()}`);
     core.warning(`glossary ${glossaryName} is not found,continue to create`);
     return;
   }
