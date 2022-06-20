@@ -1,4 +1,5 @@
 import core from "@actions/core";
+import fetch from "node-fetch";
 import { GoogleResponse } from ".";
 
 export async function createGlossary(

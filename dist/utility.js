@@ -5,9 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.headOperation = exports.deleteGlossary = exports.createGlossary = void 0;
 const core_1 = __importDefault(require("@actions/core"));
+const node_fetch_1 = __importDefault(require("node-fetch"));
 async function createGlossary(input, projectId, accessToken) {
     const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries`;
-    let resp = await fetch(endPoint, {
+    let resp = await (0, node_fetch_1.default)(endPoint, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -27,7 +28,7 @@ async function createGlossary(input, projectId, accessToken) {
 exports.createGlossary = createGlossary;
 async function deleteGlossary(projectId, glossaryName, accessToken) {
     const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
-    let resp = await fetch(endPoint, {
+    let resp = await (0, node_fetch_1.default)(endPoint, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -50,7 +51,7 @@ async function deleteGlossary(projectId, glossaryName, accessToken) {
 exports.deleteGlossary = deleteGlossary;
 async function headOperation(name, accessToken) {
     const endPoint = `https://translation.googleapis.com/v3/${name}`;
-    let resp = await fetch(endPoint, {
+    let resp = await (0, node_fetch_1.default)(endPoint, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${accessToken}`,
