@@ -151,7 +151,6 @@ async function createGlossary(input, projectId, accessToken) {
         throw Error("delete request failed");
     }
     const message = (await resp.json());
-    core.info(`create message :${message}`);
     return message.name;
 }
 exports.createGlossary = createGlossary;
@@ -186,6 +185,9 @@ async function main() {
         core.info(`detected sourceLanguage: ${sourceLanguage}, targetLanguage ${targetLanguage}`);
         core.info(`create one pair glossary resource`);
         const state = await onePairInput(targetLanguage, sourceLanguage);
+        if (state === "RUNNING") {
+            core.setOutput("operation-id", state);
+        }
         core.info(`update is ${state}`);
         return;
     }
@@ -193,6 +195,9 @@ async function main() {
         core.info(`detected language codes set: ${languageCodesSet}`);
         core.info(`create multi-language glossary resource`);
         const state = await codesSetInput(languageCodesSet);
+        if (state === "RUNNING") {
+            core.setOutput("operation-id", state);
+        }
         core.info(`update is ${state}`);
         return;
     }
@@ -213,7 +218,6 @@ async function headOperation(name, accessToken) {
         throw Error("delete request failed");
     }
     const message = (await resp.json());
-    core.info(`response message: ${JSON.stringify(message)}`);
     return message;
 }
 try {

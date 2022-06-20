@@ -26,8 +26,9 @@ inputs:
     description: "if your glossary file is multi-language sets, set this as comma separated string of language codes"
     required: false
 outputs:
-  message: # id of output
-    description: "the output message"
+  operation-id: # id of output
+    description: "if the return operation state is RUNNING, this will be output"
+    default: ""
 runs:
   using: "node16"
   main: "dist/index.js"
