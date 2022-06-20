@@ -199,7 +199,7 @@ async function main() {
     throw Error("Not appropriate language code input setting");
 }
 async function headOperation(name, accessToken) {
-    const endPoint = `https://translation.googleapis.com/v3/projects/${name}`;
+    const endPoint = `https://translation.googleapis.com/v3/${name}`;
     let resp = await (0, node_fetch_1.default)(endPoint, {
         method: "GET",
         headers: {

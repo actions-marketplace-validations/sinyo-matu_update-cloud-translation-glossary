@@ -235,7 +235,7 @@ async function main() {
 }
 
 async function headOperation(name: string, accessToken: string) {
-  const endPoint = `https://translation.googleapis.com/v3/projects/${name}`;
+  const endPoint = `https://translation.googleapis.com/v3/${name}`;
   let resp = await fetch(endPoint, {
     method: "GET",
     headers: {
