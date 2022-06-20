@@ -46,3 +46,4 @@ jobs:
           project-id: "emerald-spring-353813"
           source-language: "ja"
           target-language: "en"
+          wait-time: "5"
