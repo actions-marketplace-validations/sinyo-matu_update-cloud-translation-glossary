@@ -30,7 +30,7 @@ inputs:
     required: false
     default: "0"
 outputs:
-  operation-id: # id of output
+  operation-name: # id of output
     description: "if the return operation state is RUNNING, this will be output"
 runs:
   using: "node16"

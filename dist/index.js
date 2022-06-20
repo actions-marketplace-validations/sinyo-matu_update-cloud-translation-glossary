@@ -185,7 +185,7 @@ async function handler(...inputsRaw) {
         core.error(`create operation has failed. message:${message.error?.message}`);
         throw Error("create operation failed");
     }
-    return message.metadata.state;
+    return message;
 }
 exports.handler = handler;
 async function main() {
@@ -195,21 +195,21 @@ async function main() {
     if (targetLanguage.length !== 0 && sourceLanguage.length !== 0) {
         core.info(`detected sourceLanguage: ${sourceLanguage}, targetLanguage ${targetLanguage}`);
         core.info(`create one pair glossary resource`);
-        const state = await handler(targetLanguage, sourceLanguage);
-        if (state === "RUNNING") {
-            core.setOutput("operation-id", state);
+        const message = await handler(targetLanguage, sourceLanguage);
+        if (message.metadata?.state === "RUNNING") {
+            core.setOutput("operation-name", message.name);
         }
-        core.info(`update is ${state}`);
+        core.info(`update is ${message}`);
         return;
     }
     if (languageCodesSet.length !== 0) {
         core.info(`detected language codes set: ${languageCodesSet}`);
         core.info(`create multi-language glossary resource`);
-        const state = await handler(languageCodesSet);
-        if (state === "RUNNING") {
-            core.setOutput("operation-id", state);
+        const message = await handler(languageCodesSet);
+        if (message.metadata?.state === "RUNNING") {
+            core.setOutput("operation-name", message.name);
         }
-        core.info(`update is ${state}`);
+        core.info(`update is ${message}`);
         return;
     }
     throw Error("Not appropriate language code input setting");
