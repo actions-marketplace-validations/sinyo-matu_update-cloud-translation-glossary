@@ -199,7 +199,7 @@ async function main() {
         if (message.metadata?.state === "RUNNING") {
             core.setOutput("operation-name", message.name);
         }
-        core.info(`update is ${message}`);
+        core.info(`update is ${message.metadata?.state}`);
         return;
     }
     if (languageCodesSet.length !== 0) {
@@ -209,7 +209,7 @@ async function main() {
         if (message.metadata?.state === "RUNNING") {
             core.setOutput("operation-name", message.name);
         }
-        core.info(`update is ${message}`);
+        core.info(`update is ${message.metadata?.state}`);
         return;
     }
     throw Error("Not appropriate language code input setting");
