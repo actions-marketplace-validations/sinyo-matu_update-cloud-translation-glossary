@@ -28,7 +28,6 @@ inputs:
 outputs:
   operation-id: # id of output
     description: "if the return operation state is RUNNING, this will be output"
-    default: ""
 runs:
   using: "node16"
   main: "dist/index.js"
