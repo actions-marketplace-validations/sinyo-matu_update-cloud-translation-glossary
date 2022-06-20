@@ -42,6 +42,7 @@ jobs:
       - name: 'upload-file'
         uses: 'google-github-actions/upload-cloud-storage@v0'
         with:
+          gzip: false
           path: './file'
           destination: 'my-bucket'
 
@@ -58,3 +59,7 @@ jobs:
           wait-time: "5"
           # language-codes-set: "en,ja,de,zh,fr,ru"
 ```
+
+## Note
+
+if you are using [upload-cloud-storage](https://github.com/marketplace/actions/cloud-storage-uploader), please set `gzip: false`. otherwise the glossary csv file format may be broken.
