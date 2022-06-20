@@ -29,11 +29,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.handler = void 0;
+exports.handler = exports.headOperation = exports.deleteGlossary = exports.createGlossary = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const promises_1 = __nccwpck_require__(670);
-const utility_1 = __nccwpck_require__(861);
+const node_fetch_1 = __importDefault(__nccwpck_require__(429));
 const requiredInputOption = {
     required: true,
     trimWhiteSpace: true,
@@ -42,6 +45,67 @@ const notRequiredInputOption = {
     required: false,
     trimWhiteSpace: true,
 };
+async function createGlossary(input, projectId, accessToken) {
+    const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries`;
+    let resp = await (0, node_fetch_1.default)(endPoint, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        body: input,
+    });
+    if (resp.status >= 300) {
+        let message = await resp.text();
+        core.debug(`error message:${message}`);
+        core.error(`delete glossary request failed with status:${resp.status} message:${message}`);
+        throw Error("delete request failed");
+    }
+    const message = (await resp.json());
+    return message.name;
+}
+exports.createGlossary = createGlossary;
+async function deleteGlossary(projectId, glossaryName, accessToken) {
+    const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
+    let resp = await (0, node_fetch_1.default)(endPoint, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    if (resp.status === 404) {
+        core.debug(`response message: ${await resp.text()}`);
+        core.warning(`glossary ${glossaryName} is not found,continue to create`);
+        return;
+    }
+    if (resp.status >= 300) {
+        let message = await resp.text();
+        core.debug(`error message:${message}`);
+        core.error(`delete glossary request failed with status:${resp.status} message:${JSON.stringify(message)}`);
+        throw Error("delete request failed");
+    }
+    core.debug(`response message :${await resp.text()}`);
+    return;
+}
+exports.deleteGlossary = deleteGlossary;
+async function headOperation(name, accessToken) {
+    const endPoint = `https://translation.googleapis.com/v3/${name}`;
+    let resp = await (0, node_fetch_1.default)(endPoint, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    if (resp.status >= 300) {
+        let message = (await resp.json());
+        core.debug(`error message:${message}`);
+        core.error(`delete glossary request failed with status:${resp.status} message:${JSON.stringify(message)}`);
+        throw Error("delete request failed");
+    }
+    const message = (await resp.json());
+    return message;
+}
+exports.headOperation = headOperation;
 function getRequiredInputs() {
     const accessToken = core.getInput("access-token");
     const bucketName = core.getInput("bucket-name", requiredInputOption);
@@ -64,7 +128,7 @@ async function handler(...inputsRaw) {
     const { bucketName, glossaryFileName, projectId, glossaryName, accessToken } = getRequiredInputs();
     core.info(`try delete existed resource: ${projectId}/${glossaryName}`);
     // try delete glossary existed resource first.
-    await (0, utility_1.deleteGlossary)(projectId, glossaryName, accessToken);
+    await deleteGlossary(projectId, glossaryName, accessToken);
     const glossaryFullName = `projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
     const glossaryFilePath = `gs://${bucketName}/${glossaryFileName}`;
     let input;
@@ -99,7 +163,7 @@ async function handler(...inputsRaw) {
     }
     //  try create glossary resource
     core.info(`try create glossary resource: ${projectId}/${glossaryName}`);
-    const name = await (0, utility_1.createGlossary)(input, projectId, accessToken);
+    const name = await createGlossary(input, projectId, accessToken);
     if (!name) {
         core.error("failed to parse google response of name field");
         throw Error("failed to parse google response of name field");
@@ -112,7 +176,7 @@ async function handler(...inputsRaw) {
         await (0, promises_1.setTimeout)(waitTime * 1000);
     }
     core.info(`try head operation: ${name}`);
-    const message = await (0, utility_1.headOperation)(name, accessToken);
+    const message = await headOperation(name, accessToken);
     if (!message.metadata) {
         core.error("failed to parse google response of metaData field");
         throw Error("failed to parse google response of metaData field");
@@ -156,83 +220,6 @@ try {
 catch (error) {
     core.setFailed(error.message);
 }
-
-
-/***/ }),
-
-/***/ 861:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.headOperation = exports.deleteGlossary = exports.createGlossary = void 0;
-const core_1 = __importDefault(__nccwpck_require__(186));
-const node_fetch_1 = __importDefault(__nccwpck_require__(429));
-async function createGlossary(input, projectId, accessToken) {
-    const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries`;
-    let resp = await (0, node_fetch_1.default)(endPoint, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        body: input,
-    });
-    if (resp.status >= 300) {
-        let message = await resp.text();
-        core_1.default.debug(`error message:${message}`);
-        core_1.default.error(`delete glossary request failed with status:${resp.status} message:${message}`);
-        throw Error("delete request failed");
-    }
-    const message = (await resp.json());
-    return message.name;
-}
-exports.createGlossary = createGlossary;
-async function deleteGlossary(projectId, glossaryName, accessToken) {
-    const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
-    let resp = await (0, node_fetch_1.default)(endPoint, {
-        method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    if (resp.status === 404) {
-        core_1.default.debug(`response message: ${await resp.text()}`);
-        core_1.default.warning(`glossary ${glossaryName} is not found,continue to create`);
-        return;
-    }
-    if (resp.status >= 300) {
-        let message = await resp.text();
-        core_1.default.debug(`error message:${message}`);
-        core_1.default.error(`delete glossary request failed with status:${resp.status} message:${JSON.stringify(message)}`);
-        throw Error("delete request failed");
-    }
-    core_1.default.debug(`response message :${await resp.text()}`);
-    return;
-}
-exports.deleteGlossary = deleteGlossary;
-async function headOperation(name, accessToken) {
-    const endPoint = `https://translation.googleapis.com/v3/${name}`;
-    let resp = await (0, node_fetch_1.default)(endPoint, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    if (resp.status >= 300) {
-        let message = (await resp.json());
-        core_1.default.debug(`error message:${message}`);
-        core_1.default.error(`delete glossary request failed with status:${resp.status} message:${JSON.stringify(message)}`);
-        throw Error("delete request failed");
-    }
-    const message = (await resp.json());
-    return message;
-}
-exports.headOperation = headOperation;
 
 
 /***/ }),
