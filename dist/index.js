@@ -87,15 +87,15 @@ async function onePairInput(sourceLanguage, targetLanguage) {
     await (0, promises_1.setTimeout)(2000);
     core.info(`try head operation: ${name}`);
     const message = await headOperation(name, accessToken);
-    if (!message.metadate) {
+    if (!message.metadata) {
         core.error("failed to parse google response of metaData field");
         throw Error("failed to parse google response of metaData field");
     }
-    if (message.metadate.state === "FAILED") {
+    if (message.metadata.state === "FAILED") {
         core.error(`create operation has failed. message:${message.error?.message}`);
         throw Error("create operation failed");
     }
-    return message.metadate.state;
+    return message.metadata.state;
 }
 async function codesSetInput(codesSet) {
     const { bucketName, glossaryFileName, projectId, glossaryName, accessToken } = getRequiredInputs();
@@ -124,15 +124,15 @@ async function codesSetInput(codesSet) {
     await (0, promises_1.setTimeout)(2000);
     core.info(`try head operation: ${name}`);
     const message = await headOperation(name, accessToken);
-    if (!message.metadate) {
+    if (!message.metadata) {
         core.error("failed to parse google response of metaData field");
         throw Error("failed to parse google response of metaData field");
     }
-    if (message.metadate.state === "FAILED") {
+    if (message.metadata.state === "FAILED") {
         core.error(`create operation has failed. message:${message.error?.message}`);
         throw Error("create operation failed");
     }
-    return message.metadate.state;
+    return message.metadata.state;
 }
 async function createGlossary(input, projectId, accessToken) {
     const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries`;
@@ -171,7 +171,7 @@ async function deleteGlossary(projectId, glossaryName, accessToken) {
     if (resp.status >= 300) {
         let message = await resp.text();
         core.debug(`error message:${message}`);
-        core.error(`delete glossary request failed with status:${resp.status} message:${message}`);
+        core.error(`delete glossary request failed with status:${resp.status} message:${JSON.stringify(message)}`);
         throw Error("delete request failed");
     }
     core.debug(`response message :${await resp.text()}`);
@@ -209,10 +209,11 @@ async function headOperation(name, accessToken) {
     if (resp.status >= 300) {
         let message = (await resp.json());
         core.debug(`error message:${message}`);
-        core.error(`delete glossary request failed with status:${resp.status} message:${message}`);
+        core.error(`delete glossary request failed with status:${resp.status} message:${JSON.stringify(message)}`);
         throw Error("delete request failed");
     }
     const message = (await resp.json());
+    core.info(`response message: ${JSON.stringify(message)}`);
     return message;
 }
 try {
