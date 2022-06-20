@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+import { debug } from "console";
 import fetch from "node-fetch";
 const requiredInputOption = {
   required: true,
@@ -15,6 +16,16 @@ interface RequiredInputs {
   glossaryName: string;
   glossaryFileName: string;
   projectId: string;
+}
+
+export interface ErrorResponse {
+  error: ErrorMessage;
+}
+
+export interface ErrorMessage {
+  code: number;
+  message: string;
+  status: string;
 }
 
 function getRequiredInputs(): RequiredInputs {
@@ -77,7 +88,7 @@ async function codesSetInput(codesSet: string) {
   await createGlossary(input, projectId, accessToken);
 }
 
-async function createGlossary(
+export async function createGlossary(
   input: string,
   projectId: string,
   accessToken: string
@@ -94,15 +105,17 @@ async function createGlossary(
   if (resp.status >= 300) {
     let message = await resp.text();
     core.debug(`error message:${message}`);
+    debug(`error message:${message}`);
     core.error(
       `delete glossary request failed with status:${resp.status} message:${message}`
     );
     throw Error("delete request failed");
   }
+  debug(`response message:${resp.text()}`);
   return;
 }
 
-async function deleteGlossary(
+export async function deleteGlossary(
   projectId: string,
   glossaryName: string,
   accessToken: string
@@ -114,19 +127,20 @@ async function deleteGlossary(
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  core.info(accessToken);
   if (resp.status === 404) {
     core.warning(`glossary ${glossaryName} is not found,continue to create`);
     return;
   }
   if (resp.status >= 300) {
     let message = await resp.text();
+    debug(`error message:${message}`);
     core.debug(`error message:${message}`);
     core.error(
       `delete glossary request failed with status:${resp.status} message:${message}`
     );
     throw Error("delete request failed");
   }
+  debug(`response:${await resp.text()}`);
   return;
 }
 

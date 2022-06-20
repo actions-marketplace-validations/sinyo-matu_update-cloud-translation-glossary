@@ -38,6 +38,6 @@ jobs:
           bucket-name: "test-action-translation-bucket"
           glossary-name: "test-glossary"
           glossary-file-name: "sample.csv"
-          project-id: "translation-test-project"
+          project-id: "emerald-spring-353813"
           source-language: "ja"
           target-language: "en"
