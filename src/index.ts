@@ -46,7 +46,7 @@ export type STATE = "FAILED" | "RUNNING" | "SUCCEEDED";
 export async function createGlossary(
   input: string,
   projectId: string,
-  accessToken: string
+  accessToken: string,
 ) {
   const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries`;
   let resp = await fetch(endPoint, {
@@ -61,7 +61,7 @@ export async function createGlossary(
     let message = await resp.text();
     core.debug(`error message:${message}`);
     core.error(
-      `delete glossary request failed with status:${resp.status} message:${message}`
+      `delete glossary request failed with status:${resp.status} message:${message}`,
     );
     throw Error("delete request failed");
   }
@@ -72,7 +72,7 @@ export async function createGlossary(
 export async function deleteGlossary(
   projectId: string,
   glossaryName: string,
-  accessToken: string
+  accessToken: string,
 ) {
   const endPoint = `https://translation.googleapis.com/v3/projects/${projectId}/locations/us-central1/glossaries/${glossaryName}`;
   let resp = await fetch(endPoint, {
@@ -92,7 +92,7 @@ export async function deleteGlossary(
     core.error(
       `delete glossary request failed with status:${
         resp.status
-      } message:${JSON.stringify(message)}`
+      } message:${JSON.stringify(message)}`,
     );
     throw Error("delete request failed");
   }
@@ -114,7 +114,7 @@ export async function headOperation(name: string, accessToken: string) {
     core.error(
       `delete glossary request failed with status:${
         resp.status
-      } message:${JSON.stringify(message)}`
+      } message:${JSON.stringify(message)}`,
     );
     throw Error("delete request failed");
   }
@@ -128,7 +128,7 @@ function getRequiredInputs(): RequiredInputs {
   const glossaryName = core.getInput("glossary-name", requiredInputOption);
   const glossaryFileName = core.getInput(
     "glossary-file-name",
-    requiredInputOption
+    requiredInputOption,
   );
   const projectId = core.getInput("project-id", requiredInputOption);
   return {
@@ -191,7 +191,7 @@ export async function handler(...inputsRaw: string[]) {
     throw Error("failed to parse google response of name field");
   }
   const waitTimeRaw = parseInt(
-    core.getInput("wait-time", notRequiredInputOption)
+    core.getInput("wait-time", notRequiredInputOption),
   );
   let waitTime = isNaN(waitTimeRaw) ? 0 : waitTimeRaw;
   waitTime = waitTime > 300 ? 300 : waitTime;
@@ -207,7 +207,7 @@ export async function handler(...inputsRaw: string[]) {
   }
   if (message.metadata.state === "FAILED") {
     core.error(
-      `create operation has failed. message:${message.error?.message}`
+      `create operation has failed. message:${message.error?.message}`,
     );
     throw Error("create operation failed");
   }
@@ -217,22 +217,22 @@ export async function handler(...inputsRaw: string[]) {
 async function main() {
   const targetLanguage = core.getInput(
     "target-language",
-    notRequiredInputOption
+    notRequiredInputOption,
   );
   const sourceLanguage = core.getInput(
     "source-language",
-    notRequiredInputOption
+    notRequiredInputOption,
   );
   const languageCodesSet = core.getInput(
     "language-codes-set",
-    notRequiredInputOption
+    notRequiredInputOption,
   );
   if (targetLanguage.length !== 0 && sourceLanguage.length !== 0) {
     core.info(
-      `detected sourceLanguage: ${sourceLanguage}, targetLanguage ${targetLanguage}`
+      `detected sourceLanguage: ${sourceLanguage}, targetLanguage ${targetLanguage}`,
     );
     core.info(`create one pair glossary resource`);
-    const message = await handler(targetLanguage, sourceLanguage);
+    const message = await handler(sourceLanguage, targetLanguage);
     if (message.metadata?.state === "RUNNING") {
       core.setOutput("operation-name", message.name);
     }
