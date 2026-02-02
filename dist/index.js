@@ -134,6 +134,7 @@ async function handler(...inputsRaw) {
     let input;
     switch (type) {
         case "onePair":
+            core.info(`will create one pair glossary with sourceLanguage: ${inputsRaw[0]}, targetLanguage: ${inputsRaw[1]} and file: ${glossaryFilePath}`);
             input = JSON.stringify({
                 name: glossaryFullName,
                 languagePair: {
@@ -148,6 +149,7 @@ async function handler(...inputsRaw) {
             });
             break;
         case "codesSet":
+            core.info(`will create multi-language glossary with language codes: ${inputsRaw[0].split(",")} and file: ${glossaryFilePath}`);
             const codes = inputsRaw[0].split(",");
             input = JSON.stringify({
                 name: glossaryFullName,
@@ -195,7 +197,7 @@ async function main() {
     if (targetLanguage.length !== 0 && sourceLanguage.length !== 0) {
         core.info(`detected sourceLanguage: ${sourceLanguage}, targetLanguage ${targetLanguage}`);
         core.info(`create one pair glossary resource`);
-        const message = await handler(targetLanguage, sourceLanguage);
+        const message = await handler(sourceLanguage, targetLanguage);
         if (message.metadata?.state === "RUNNING") {
             core.setOutput("operation-name", message.name);
         }
