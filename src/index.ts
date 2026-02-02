@@ -156,6 +156,9 @@ export async function handler(...inputsRaw: string[]) {
   let input;
   switch (type) {
     case "onePair":
+      core.info(
+        `will create one pair glossary with sourceLanguage: ${inputsRaw[0]}, targetLanguage: ${inputsRaw[1]} and file: ${glossaryFilePath}`,
+      );
       input = JSON.stringify({
         name: glossaryFullName,
         languagePair: {
@@ -170,6 +173,9 @@ export async function handler(...inputsRaw: string[]) {
       });
       break;
     case "codesSet":
+      core.info(
+        `will create multi-language glossary with language codes: ${inputsRaw[0].split(",")} and file: ${glossaryFilePath}`,
+      );
       const codes = inputsRaw[0].split(",");
       input = JSON.stringify({
         name: glossaryFullName,
